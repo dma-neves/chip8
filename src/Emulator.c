@@ -31,8 +31,17 @@ void executeNextInstruction(Chip8* chip8)
     uint8_t highbyte = chip8->mem[chip8->PC++];
     uint8_t lowbyte = chip8->mem[chip8->PC++];
 
-    uint8_t highword = highbyte & 0xF0;
-    switch(highword)
+    uint8_t word[4] =
+    {
+        lowbyte & 0x0F,
+        lowbyte >> 4,
+        highbyte & 0x0F,
+        highbyte >> 4
+    };
+
+    uint16_t nibble = ( (uint16_t)lowbyte ) & ( (uint16_t)word[2] << 12 );
+
+    switch(word[3])
     {
         case 0x0:
             if(lowbyte == 0xE0)
@@ -44,27 +53,73 @@ void executeNextInstruction(Chip8* chip8)
             break;
 
         case 0x1:
+            jp(chip8, nibble);
             break;
 
         case 0x2:
+            call(chip8, nibble);
             break;
 
         case 0x3:
+            se_vx_kk(chip8, word[2], lowbyte);
             break;
 
         case 0x4:
+            sne_vx_kk(chip8, word[2], lowbyte);
             break;
 
         case 0x5:
+            if(word[0] == 0)
+                se_vx_vy(chip8, word[2], word[1]);
             break;
 
         case 0x6:
+            ld_vx_kk(chip8, word[2], lowbyte);
             break;
 
         case 0x7:
+            add_vx_kk(chip8, word[2], lowbyte);
             break;
 
         case 0x8:
+            switch(word[0])
+            {
+                case 0x0:
+                    lod_vx_vy(chip8, word[2], word[1]);
+                    break;
+                
+                case 0x1:
+                    or_vx_vy(chip8, word[2], word[1]);
+                    break;
+
+                case 0x2:
+                    and_vx_vy(chip8, word[2], word[1]);
+                    break;
+
+                case 0x3:
+                    xor_vx_vy(chip8, word[2], word[1]);
+                    break;
+
+                case 0x4:
+                    add_vx_vy(chip8, word[2], word[1]);
+                    break;
+
+                case 0x5:
+                    sub_vx_vy(chip8, word[2], word[1]);
+                    break;
+
+                case 0x6:
+                    shr_vx(chip8, word[2]);
+                    break;
+
+                case 0x7:
+                    subn_vx_vy(chip8, word[2], word[1]);
+                    break;
+
+                case 0xE:
+                    shl_vx(chip8, word[2]);
+                    break;
+            }
             break;
 
         case 0x9:

@@ -22,7 +22,7 @@ int main(int argc, char** argv)
         resetSystem(chip8);
         loadRom(argv[1], chip8);
 
-        //while(1)
+        while(1)
         {
             float dt = sfTime_asSeconds( sfClock_restart(clock) );
             timer += dt;
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
             renderDisplay(chip8);
 
-            printMem(chip8);
+            //printMem(chip8);
         }
 
         sfClock_destroy(clock);
