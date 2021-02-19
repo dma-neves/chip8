@@ -2,6 +2,7 @@
 #include "Display.h"
 
 #include <stdio.h>
+#include <string.h>
 
 void loadRom(char* file, Chip8* chip8)
 {
@@ -49,7 +50,7 @@ void executeNextInstruction(Chip8* chip8)
             else if(lowbyte == 0xEE)
                 ret(chip8);
             else
-                sysAddr(chip8);
+                sys(chip8);
             break;
 
         case 0x1:
@@ -85,7 +86,7 @@ void executeNextInstruction(Chip8* chip8)
             switch(word[0])
             {
                 case 0x0:
-                    lod_vx_vy(chip8, word[2], word[1]);
+                    ld_vx_vy(chip8, word[2], word[1]);
                     break;
                 
                 case 0x1:

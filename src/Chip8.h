@@ -31,7 +31,7 @@ void sne_vx_kk(Chip8* chip8, uint8_t x, uint8_t kk);
 void se_vx_vy(Chip8* chip8, uint8_t x, uint8_t y);
 void ld_vx_kk(Chip8* chip8, uint8_t x, uint8_t kk);
 void add_vx_kk(Chip8* chip8, uint8_t x, uint8_t kk);
-void lod_vx_vy(Chip8* chip8, uint8_t x, uint8_t y);
+void ld_vx_vy(Chip8* chip8, uint8_t x, uint8_t y);
 void or_vx_vy(Chip8* chip8, uint8_t x, uint8_t y);
 void and_vx_vy(Chip8* chip8, uint8_t x, uint8_t y);
 void xor_vx_vy(Chip8* chip8, uint8_t x, uint8_t y);

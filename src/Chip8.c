@@ -68,7 +68,7 @@ void add_vx_kk(Chip8* chip8, uint8_t x, uint8_t kk)
 }
 
 // Load Vy into Vx
-void Load_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
+void ld_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
 {
     chip8->V[x] = chip8->V[y];
 }
