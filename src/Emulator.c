@@ -3,6 +3,29 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <stdlib.h>
+#include <SFML/Graphics.h>
+
+uint8_t fontset[FONTSET_SIZE] =
+{
+	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+	0x20, 0x60, 0x20, 0x20, 0x70, // 1
+	0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+	0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+	0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+	0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+	0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+	0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+	0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+	0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+	0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+	0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+	0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+	0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+	0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+	0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
 
 void loadRom(char* file, Chip8* chip8)
 {
@@ -22,15 +45,26 @@ void loadRom(char* file, Chip8* chip8)
     fclose(fp);
 }
 
+void loadFonts(Chip8* chip8)
+{
+    int i = 0;
+    for(; i < FONTSET_SIZE; i++)
+    {
+        chip8->mem[FONTSET_START_ADDRESS + i] = fontset[i]; 
+    }
+}
+
 void resetSystem(Chip8* chip8)
 {
     memset(chip8, 0, sizeof(Chip8));
+    loadFonts(chip8);
+    srand(time(NULL));
 }
 
 void executeNextInstruction(Chip8* chip8)
 {
-    uint8_t highbyte = chip8->mem[chip8->PC++];
-    uint8_t lowbyte = chip8->mem[chip8->PC++];
+    uint8_t highbyte = chip8->mem[chip8->PC];
+    uint8_t lowbyte = chip8->mem[chip8->PC+1];
 
     uint8_t word[4] =
     {
@@ -40,7 +74,7 @@ void executeNextInstruction(Chip8* chip8)
         highbyte >> 4
     };
 
-    uint16_t nibble = ( (uint16_t)lowbyte ) & ( (uint16_t)word[2] << 12 );
+    uint16_t nibble = ( (uint16_t)lowbyte ) | ( (uint16_t)word[2] << 12 );
 
     switch(word[3])
     {
@@ -51,6 +85,8 @@ void executeNextInstruction(Chip8* chip8)
                 ret(chip8);
             else
                 sys(chip8);
+            
+            //printf("REACHED\n");
             break;
 
         case 0x1:
@@ -124,36 +160,113 @@ void executeNextInstruction(Chip8* chip8)
             break;
 
         case 0x9:
+            sne_vx_vy(chip8, word[2], word[1]);
             break;
 
         case 0xA:
+            ld_i_addr(chip8, nibble);
             break;
         
         case 0xB:
+            jp_v0_addr(chip8, nibble);
             break;
         
         case 0xC:
+            rnd_vx_kk(chip8, word[2], lowbyte, rand()%256);
             break;
 
         case 0xD:
+            drw_vx_vy(chip8, word[2], word[1], word[0]);
             break;
 
         case 0xE:
+            switch(lowbyte)
+            {
+                case 0x9E:
+                    skp_vx(chip8, word[2]);
+                    break;
+
+                case 0xA1:
+                    sknp_vx(chip8, word[2]);
+                    break;
+            }
             break;
 
         case 0xF:
+            switch(lowbyte)
+            {
+                case 0x07:
+                    ld_vx_dt(chip8, word[2]);
+                    break;
+
+                case 0x0A:
+                    ld_vx_k(chip8, word[2]);
+                    break;
+
+                case 0x15:
+                    ld_dt_vx(chip8, word[2]);
+                    break;
+
+                case 0x18:
+                    ld_st_vx(chip8, word[2]);
+                    break;
+                
+                case 0x1E:
+                    add_i_vx(chip8, word[2]);
+                    break;
+
+                case 0x29:
+                    ld_f_vx(chip8, word[2]);
+                    break;
+
+                case 0x33:
+                    ld_b_vx(chip8, word[2]);
+                    break;
+
+                case 0x55:
+                    ld_i_vx(chip8, word[2]);
+                    break;
+
+                case 0x65:
+                    ld_vx_i(chip8, word[2]);
+                    break;
+            }
             break;
     }
+
+    chip8->PC += 2;
 }
 
 void updateTimers(Chip8* chip8)
 {
     if(chip8->delayTimer != 0)
         chip8->delayTimer--;
+
+    if(chip8->soundTimer != 0)
+        chip8->soundTimer--;
 }
 
 void handleInput(Chip8* chip8)
 {
+    chip8->keyboard[0x1] = sfKeyboard_isKeyPressed(sfKeyNum1);
+    chip8->keyboard[0x2] = sfKeyboard_isKeyPressed(sfKeyNum2);
+    chip8->keyboard[0x3] = sfKeyboard_isKeyPressed(sfKeyNum3);
+    chip8->keyboard[0xC] = sfKeyboard_isKeyPressed(sfKeyNum4);
+
+    chip8->keyboard[0x4] = sfKeyboard_isKeyPressed(sfKeyQ);
+    chip8->keyboard[0x5] = sfKeyboard_isKeyPressed(sfKeyW);
+    chip8->keyboard[0x6] = sfKeyboard_isKeyPressed(sfKeyE);
+    chip8->keyboard[0xD] = sfKeyboard_isKeyPressed(sfKeyR);
+
+    chip8->keyboard[0x7] = sfKeyboard_isKeyPressed(sfKeyA);
+    chip8->keyboard[0x8] = sfKeyboard_isKeyPressed(sfKeyS);
+    chip8->keyboard[0x9] = sfKeyboard_isKeyPressed(sfKeyD);
+    chip8->keyboard[0xE] = sfKeyboard_isKeyPressed(sfKeyF);
+
+    chip8->keyboard[0xA] = sfKeyboard_isKeyPressed(sfKeyZ);
+    chip8->keyboard[0x0] = sfKeyboard_isKeyPressed(sfKeyX);
+    chip8->keyboard[0xB] = sfKeyboard_isKeyPressed(sfKeyC);
+    chip8->keyboard[0xF] = sfKeyboard_isKeyPressed(sfKeyV);
 
 }
 

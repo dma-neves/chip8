@@ -3,11 +3,7 @@
 // Clear screen
 void cls(Chip8* chip8)
 {
-    //memset(chip8->mem+DISP_START, 0, (DISP_END-DISP_START)*sizeof(uint8_t));
-
-    int i = DISP_START;
-    for(; i <= DISP_END; i++)
-        chip8->mem[i] = 0;
+    memset(chip8->screen, 0, sizeof(chip8->screen));
 }
 
 // Return from subroutine
@@ -124,4 +120,141 @@ void shl_vx(Chip8* chip8, uint8_t x)
 {
     chip8->V[0xF] = ( (chip8->V[x] & 0x80) != 0 );
     chip8->V[x] = chip8->V[x] >> 1;
+}
+
+// Skip next instruction if Vx != Vy
+void sne_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
+{
+    if(chip8->V[x] != chip8->V[y])
+        chip8->PC += 2;
+}
+
+// Load addr into I
+void ld_i_addr(Chip8* chip8, uint16_t addr)
+{
+    chip8->I = addr;
+}
+
+// Jump to V0 + addr
+void jp_v0_addr(Chip8* chip8, uint16_t addr)
+{
+    chip8->PC = chip8->V[0] + addr;
+}
+
+// Load rnd and kk into Vx
+void rnd_vx_kk(Chip8* chip8, uint8_t x, uint8_t kk, uint8_t rnd)
+{
+    chip8->V[x] = rnd & kk;
+}
+
+// Draw sprite at display coordinates (Vx, Vy), stored at address I with n bytes.
+void drw_vx_vy(Chip8* chip8, uint8_t x, uint8_t y, uint8_t n)
+{
+    // TODO: screen[y][x] or screen[x][y]
+    uint8_t* pixel = &chip8->screen[ chip8->V[y] ][ chip8->V[x] ];
+
+    // Reset collision register to false
+    chip8->V[0xF] = 0;
+    int i,j;
+    for(i = 0; i < n; i++)
+    {
+        uint8_t sprite_ps = chip8->mem[chip8->I + i]; // Sprite pixel set (8 pixels)
+
+        for(j = 0; j < 8; j++)
+        {
+            uint8_t sprite_p = ( sprite_ps & (1 << j) ) >> j; 
+            uint8_t screen_p = *pixel;
+            *pixel = screen_p ^ sprite_p;
+
+            // If pixel is ereased set collision register to true
+            if(screen_p == 1 && *pixel == 0)
+                chip8->V[0xF] = 1;
+        }
+    }
+}
+
+// Skip next instruction if key with the value of Vx is pressed
+void skp_vx(Chip8* chip8, uint8_t x)
+{
+    if(chip8->keyboard[chip8->V[x]])
+        chip8->PC += 2;
+}
+
+// Skip next instruction if key with the value of Vx is not pressed
+void sknp_vx(Chip8* chip8, uint8_t x)
+{
+    if(!chip8->keyboard[chip8->V[x]])
+        chip8->PC += 2;
+}
+
+// Set Vx = delay timer value
+void ld_vx_dt(Chip8* chip8, uint8_t x)
+{
+    chip8->V[x] = chip8->delayTimer;
+}
+
+// Wait for a key press, store the value of the key in Vx
+void ld_vx_k(Chip8* chip8, uint8_t x)
+{
+    int i = 0;
+    for(; i < NUM_KEYS; i++)
+    {
+        if(chip8->keyboard[i])
+            chip8->V[x] = i;
+    }
+
+    if(i == NUM_KEYS)
+        chip8->PC -= 2;
+}
+
+// Set delay timer = Vx
+void ld_dt_vx(Chip8* chip8, uint8_t x)
+{
+    chip8->delayTimer = chip8->V[x];
+}
+
+// Set sound timer = Vx
+void ld_st_vx(Chip8* chip8, uint8_t x)
+{
+    chip8->soundTimer = chip8->V[x];
+}
+
+// Set I = I + Vx
+void add_i_vx(Chip8* chip8, uint8_t x)
+{
+    chip8->I += chip8->V[x];
+}
+
+// Set I = location of sprite for digit Vx
+void ld_f_vx(Chip8* chip8, uint8_t x)
+{
+    chip8->I = FONTSET_START_ADDRESS + chip8->V[x] * FONTSET_BYTES_PER_DIGIT;
+}
+
+// Store BCD representation of Vx in memory locations I, I+1, and I+2
+void ld_b_vx(Chip8* chip8, uint8_t x)
+{
+    uint8_t hundreds = chip8->V[x]/100;
+    uint8_t tens = (chip8->V[x] - hundreds*100)/10;
+    uint8_t ones = (chip8->V[x] - hundreds*100 - tens*10);
+
+    chip8->mem[chip8->I] = hundreds;
+    chip8->mem[chip8->I+1] = tens;
+    chip8->mem[chip8->I+2] = ones;
+}
+
+// Store registers V0 through Vx in memory starting at location I
+void ld_i_vx(Chip8* chip8, uint8_t x)
+{
+    int i = 0;
+    for(; i < x; i++)
+        chip8->mem[chip8->I + i] = chip8->V[x];
+}
+
+// Read registers V0 through Vx from memory starting at location I
+void ld_vx_i(Chip8* chip8, uint8_t x)
+{
+    int i = 0;
+    for(; i < x; i++)
+        chip8->V[x] = chip8->mem[chip8->I + i];
 }
