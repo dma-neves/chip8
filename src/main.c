@@ -3,6 +3,7 @@
 #include <SFML/Graphics.h>
 
 #include "Emulator.h"
+#include "Display.h"
 
 #define W_HEIGHT 320
 #define W_WIDTH  640
@@ -11,8 +12,8 @@ sfClock* clock;
 sfRenderWindow* window;
 sfVideoMode mode;
 sfEvent event;
-float timer_60;  // 60Hz  timer
-float timer_500; // 500Hz timer
+float timer_60 = 0;  // 60Hz  timer
+float timer_500 = 0; // 500Hz timer
 int running;
 
 void handleCloseEvent()
@@ -45,6 +46,7 @@ int main(int argc, char** argv)
         Chip8* chip8 = malloc(sizeof(Chip8));
         resetSystem(chip8);
         loadRom(argv[1], chip8);
+        resetDisplay();
 
         while(running)
         {
@@ -59,6 +61,7 @@ int main(int argc, char** argv)
                 // Update timer_60s at a 60Hz frequency
                 timer_60 = 0;
                 updateTimers(chip8);
+                renderDisplay(chip8, window);
             }
 
             if(timer_500 >= 1.f/500.f)
@@ -68,7 +71,7 @@ int main(int argc, char** argv)
             }
 
             handleInput(chip8);
-            renderDisplay(chip8, window);
+            //renderDisplay(chip8, window);
         }
 
         sfClock_destroy(clock);
