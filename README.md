@@ -15,6 +15,7 @@
   - To run the program use `./chip8.out roms/romfile.ch8`
 
 **Controls**
+<br/> ![alt text](https://github.com/dma-neves/chip8/blob/main/other/controls.png)
 
 **Games**
   - Inside the folder roms are some games and tests.
