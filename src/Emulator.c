@@ -5,7 +5,6 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
-#include <SFML/Graphics.h>
 
 uint8_t fontset[FONTSET_SIZE] =
 {
@@ -57,14 +56,23 @@ void loadFonts(Chip8* chip8)
 void resetSystem(Chip8* chip8)
 {
     memset(chip8, 0, sizeof(Chip8));
+    chip8->drawFlag = 1;
+    chip8->PC = PROG_START;
     loadFonts(chip8);
     srand(time(NULL));
 }
 
 void executeNextInstruction(Chip8* chip8)
 {
+    chip8->pcIncFlag = 1;
+
     uint8_t highbyte = chip8->mem[chip8->PC];
     uint8_t lowbyte = chip8->mem[chip8->PC+1];
+
+    // printf("highbyte: %X\n", highbyte);
+    // printf("lowbyte: %X\n", lowbyte);
+    // printRegs(chip8);
+    // getchar();
 
     uint8_t word[4] =
     {
@@ -74,7 +82,7 @@ void executeNextInstruction(Chip8* chip8)
         highbyte >> 4
     };
 
-    uint16_t nibble = ( (uint16_t)lowbyte ) | ( (uint16_t)word[2] << 12 );
+    uint16_t nibble = ( (uint16_t)lowbyte ) | ( (uint16_t)word[2] << 8 );
 
     switch(word[3])
     {
@@ -234,7 +242,8 @@ void executeNextInstruction(Chip8* chip8)
             break;
     }
 
-    chip8->PC += 2;
+    if(chip8->pcIncFlag)
+        chip8->PC += 2;
 }
 
 void updateTimers(Chip8* chip8)
@@ -270,18 +279,62 @@ void handleInput(Chip8* chip8)
 
 }
 
-void renderDisplay(Chip8* chip8)
+void renderDisplay(Chip8* chip8, sfRenderWindow* window)
 {
+    if(chip8->drawFlag)
+    {
+        chip8->drawFlag = 0;
 
+        sfRenderWindow_clear(window, sfBlack);
+
+        sfRectangleShape* rect = sfRectangleShape_create();
+        sfVector2f size = 
+        {
+            .x = sfRenderWindow_getSize(window).x / SCREEN_WIDTH,
+            .y = sfRenderWindow_getSize(window).y / SCREEN_HEIGHT
+        };
+        sfRectangleShape_setSize(rect, size);
+        sfRectangleShape_setFillColor(rect, sfColor_fromRGB(255,255,255));
+
+        int y,x;
+        for(y = 0; y < SCREEN_HEIGHT; y++)
+        {
+            for(x = 0; x < SCREEN_WIDTH; x++)
+            {
+                if(chip8->screen[y][x])
+                {
+                    sfVector2f pos = { .x = x*size.x, .y = y*size.y };
+                    sfRectangleShape_setPosition(rect, pos);
+                    sfRenderWindow_drawRectangleShape(window, rect, NULL);
+                }
+            }
+        }
+
+        sfRenderWindow_display(window);
+    }
 }
 
 void printMem(Chip8* chip8)
 {
     int i;
-    for(i = PROG_START; i < MEM_SIZE; i++)
+    for(i = PROG_START; i < PROG_START+250; i++)
     {
         printf("%X ", chip8->mem[i]);
 
         if((i+1)%16 == 0) printf("\n");
     }
+    printf("\n");
+}
+
+void printRegs(Chip8* chip8)
+{
+    for(int i = 0; i < 16; i++)
+        printf("V[%d] = %d\n", i, chip8->V[i]);
+
+
+    printf("I = %d\n", chip8->I);
+    printf("PC = %d\n", chip8->PC);
+    printf("SP = %d\n", chip8->SP);
+    printf("DT = %d\n", chip8->delayTimer);
+    printf("ST = %d\n", chip8->soundTimer);
 }

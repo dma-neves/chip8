@@ -29,6 +29,8 @@ typedef struct _Chip8
     uint16_t stack[16];             // stack 16 16-bit values
 
     uint8_t screen[SCREEN_HEIGHT][SCREEN_WIDTH];
+    uint8_t drawFlag;
+    uint8_t pcIncFlag;
     uint8_t keyboard[NUM_KEYS];
 } Chip8;
 
