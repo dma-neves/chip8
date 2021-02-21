@@ -14,7 +14,7 @@ void updateBuffer(Chip8* chip8)
 
 void renderDisplay(Chip8* chip8, sfRenderWindow* window)
 {
-    if(chip8->drawFlag)
+    //if(chip8->drawFlag)
     {
         chip8->drawFlag = 0;
 
@@ -34,7 +34,7 @@ void renderDisplay(Chip8* chip8, sfRenderWindow* window)
         {
             for(x = 0; x < SCREEN_WIDTH; x++)
             {
-                if(chip8->screen[y][x] /*| screenBuf[y][x]*/)
+                if(chip8->screen[y][x] | screenBuf[y][x])
                 {
                     sfVector2f pos = { .x = x*size.x, .y = y*size.y };
                     sfRectangleShape_setPosition(rect, pos);
