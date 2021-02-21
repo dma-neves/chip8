@@ -93,14 +93,14 @@ void xor_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
 // Load Vx + Vy into Vx
 void add_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
 {
-    chip8->V[0xF] = ( (uint16_t)chip8->V[x] + (uint16_t)chip8->V[x] > 255 );
+    chip8->V[0xF] = ( (uint16_t)chip8->V[x] + (uint16_t)chip8->V[y] > 255 );
     chip8->V[x] += chip8->V[y];
 }
 
 // Load Vx - Vy into Vx
 void sub_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
 {
-    chip8->V[0xF] = ( chip8->V[x] > chip8->V[y] );
+    chip8->V[0xF] = ( chip8->V[x] >= chip8->V[y] );
     chip8->V[x] -= chip8->V[y];
 }
 
@@ -114,7 +114,7 @@ void shr_vx(Chip8* chip8, uint8_t x)
 // Load Vy - Vx into Vx
 void subn_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
 {
-    chip8->V[0xF] = ( chip8->V[y] > chip8->V[x] );
+    chip8->V[0xF] = ( chip8->V[y] >= chip8->V[x] );
     chip8->V[x] = chip8->V[y] - chip8->V[x];
 }
 
@@ -122,7 +122,7 @@ void subn_vx_vy(Chip8* chip8, uint8_t x, uint8_t y)
 void shl_vx(Chip8* chip8, uint8_t x)
 {
     chip8->V[0xF] = ( (chip8->V[x] & 0x80) != 0 );
-    chip8->V[x] = chip8->V[x] >> 1;
+    chip8->V[x] = chip8->V[x] << 1;
 }
 
 // Skip next instruction if Vx != Vy
@@ -239,20 +239,16 @@ void ld_f_vx(Chip8* chip8, uint8_t x)
 // Store BCD representation of Vx in memory locations I, I+1, and I+2
 void ld_b_vx(Chip8* chip8, uint8_t x)
 {
-    uint8_t hundreds = chip8->V[x]/100;
-    uint8_t tens = (chip8->V[x] - hundreds*100)/10;
-    uint8_t ones = (chip8->V[x] - hundreds*100 - tens*10);
-
-    chip8->mem[chip8->I] = hundreds;
-    chip8->mem[chip8->I+1] = tens;
-    chip8->mem[chip8->I+2] = ones;
+    chip8->mem[chip8->I] = chip8->V[x]/100;
+    chip8->mem[chip8->I+1] = (chip8->V[x]/10) % 10;
+    chip8->mem[chip8->I+2] = (chip8->V[x] % 100) % 10;
 }
 
 // Store registers V0 through Vx in memory starting at location I
 void ld_i_vx(Chip8* chip8, uint8_t x)
 {
     int i = 0;
-    for(; i < x; i++)
+    for(; i <= x; i++)
         chip8->mem[chip8->I + i] = chip8->V[x];
 }
 
@@ -261,5 +257,5 @@ void ld_vx_i(Chip8* chip8, uint8_t x)
 {
     int i = 0;
     for(; i <= x; i++)
-        chip8->V[x] = chip8->mem[chip8->I + i];
+        chip8->V[i] = chip8->mem[chip8->I + i];
 }

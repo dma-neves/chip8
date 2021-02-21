@@ -84,17 +84,22 @@ void executeNextInstruction(Chip8* chip8)
 
     uint16_t nibble = ( (uint16_t)lowbyte ) | ( (uint16_t)word[2] << 8 );
 
+    // if(highbyte == 0 && lowbyte == 0)
+    //     exit(0);
+
     switch(word[3])
     {
         case 0x0:
             if(lowbyte == 0xE0)
+            {
                 cls(chip8);
+                //printf("REACHED\n");
+            }
             else if(lowbyte == 0xEE)
                 ret(chip8);
             else
                 sys(chip8);
             
-            //printf("REACHED\n");
             break;
 
         case 0x1:
@@ -294,12 +299,12 @@ void printMem(Chip8* chip8)
 void printRegs(Chip8* chip8)
 {
     for(int i = 0; i < 16; i++)
-        printf("V[%d] = %d\n", i, chip8->V[i]);
+        printf("V[%X] = %X\n", i, chip8->V[i]);
 
 
-    printf("I = %d\n", chip8->I);
-    printf("PC = %d\n", chip8->PC);
-    printf("SP = %d\n", chip8->SP);
-    printf("DT = %d\n", chip8->delayTimer);
-    printf("ST = %d\n", chip8->soundTimer);
+    printf("I = %X\n", chip8->I);
+    printf("PC = %X\n", chip8->PC);
+    printf("SP = %X\n", chip8->SP);
+    printf("DT = %X\n", chip8->delayTimer);
+    printf("ST = %X\n", chip8->soundTimer);
 }

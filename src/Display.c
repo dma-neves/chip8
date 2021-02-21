@@ -7,7 +7,7 @@ void resetDisplay()
     memset(screenBuf, 0, sizeof(screenBuf));
 }
 
-void updateBuffers(Chip8* chip8)
+void updateBuffer(Chip8* chip8)
 {
     memcpy(screenBuf, chip8->screen, sizeof(chip8->screen));
 }
@@ -34,7 +34,7 @@ void renderDisplay(Chip8* chip8, sfRenderWindow* window)
         {
             for(x = 0; x < SCREEN_WIDTH; x++)
             {
-                if(chip8->screen[y][x] | screenBuf[y][x])
+                if(chip8->screen[y][x] /*| screenBuf[y][x]*/)
                 {
                     sfVector2f pos = { .x = x*size.x, .y = y*size.y };
                     sfRectangleShape_setPosition(rect, pos);
@@ -44,6 +44,6 @@ void renderDisplay(Chip8* chip8, sfRenderWindow* window)
         }
 
         sfRenderWindow_display(window);
-        updateBuffers(chip8);
+        updateBuffer(chip8);
     }
 }
