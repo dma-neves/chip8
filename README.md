@@ -23,3 +23,4 @@
 
 **Images**
   - Pong: <br/> ![alt text](https://github.com/dma-neves/chip8/blob/main/other/pong.png)
+  - Tetris <br/> ![alt text](https://github.com/dma-neves/chip8/blob/main/other/tetris.png)
