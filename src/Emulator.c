@@ -60,6 +60,13 @@ void resetSystem(Chip8* chip8)
     chip8->PC = PROG_START;
     loadFonts(chip8);
     srand(time(NULL));
+
+    resetDisplay();
+}
+
+void render(Chip8* chip8, sfRenderWindow* window)
+{
+    renderDisplay(chip8, window);
 }
 
 void executeNextInstruction(Chip8* chip8)
