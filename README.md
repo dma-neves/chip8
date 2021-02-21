@@ -17,8 +17,8 @@
   - To run the program use `./chip8.out roms/romfile.ch8`
 
 **Games**
-  - Inside the folder roms there are some games and tests.
+  - Inside the folder roms are some games and tests.
   - More roms: https://www.zophar.net/pdroms/chip8.html
 
 **Images**
-  - ![alt text](https://github.com/dma-neves/chip8/blob/main/other/pong.png)
+  - Pong: <br/> ![alt text](https://github.com/dma-neves/chip8/blob/main/other/pong.png)
