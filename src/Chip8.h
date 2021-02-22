@@ -6,8 +6,6 @@
 
 #define MEM_SIZE   0xFFF
 #define PROG_START 0x200
-#define DISP_START 0x000
-#define DISP_END   0x1FF
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
 #define NUM_KEYS 16
