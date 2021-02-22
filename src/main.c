@@ -44,6 +44,7 @@ int main(int argc, char** argv)
         window = sfRenderWindow_create(mode, "chip-8", sfResize | sfClose, NULL);
         clock = sfClock_create();
         running = 1;
+        
 
         Chip8* chip8 = malloc(sizeof(Chip8));
         resetSystem(chip8);
