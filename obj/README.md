@@ -1,1 +1,1 @@
-# obj folder
+# object files folder
