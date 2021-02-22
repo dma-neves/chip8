@@ -43,7 +43,6 @@ int main(int argc, char** argv)
         mode.bitsPerPixel = 32;
         window = sfRenderWindow_create(mode, "chip-8", sfResize | sfClose, NULL);
         clock = sfClock_create();
-        timer_60 = 0;
         running = 1;
 
         Chip8* chip8 = malloc(sizeof(Chip8));
