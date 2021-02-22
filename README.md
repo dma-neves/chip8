@@ -18,7 +18,7 @@
 <br/> ![alt text](https://github.com/dma-neves/chip8/blob/main/other/controls.png)
 
 **Games**
-  - Inside the folder roms are some games and tests.
+  - Inside the folder /roms are some games and tests.
   - [Game Controls](https://github.com/dma-neves/chip8/blob/main/other/game_controls.txt).
 
 **Images**
