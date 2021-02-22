@@ -90,17 +90,11 @@ void executeNextInstruction(Chip8* chip8)
 
     uint16_t nibble = ( (uint16_t)lowbyte ) | ( (uint16_t)word[2] << 8 );
 
-    // if(highbyte == 0 && lowbyte == 0)
-    //     exit(0);
-
     switch(word[3])
     {
         case 0x0:
             if(lowbyte == 0xE0)
-            {
                 cls(chip8);
-                //printf("REACHED\n");
-            }
             else if(lowbyte == 0xEE)
                 ret(chip8);
             else

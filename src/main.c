@@ -68,6 +68,7 @@ int main(int argc, char** argv)
 
             if(timer_500 >= 1.f/500.f)
             {
+                // The chip-8 runs on a 500Hz "clock"
                 timer_500 = 0;
                 executeNextInstruction(chip8);
             }
