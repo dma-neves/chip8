@@ -1,0 +1,21 @@
+pong and pong_2:
+	
+	player 1 up:   1
+	player 1 down: Q
+
+	player 2 up:   4
+	player 2 down: R
+
+snake:
+	
+	up:    2
+	down:  S
+	left:  Q
+	right: E
+
+tetris:
+
+	left:   W
+	right:  E
+	rotate: Q
+	faster: A
