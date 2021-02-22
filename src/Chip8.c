@@ -4,7 +4,6 @@
 void cls(Chip8* chip8)
 {
     memset(chip8->screen, 0, sizeof(chip8->screen));
-    chip8->drawFlag = 1;
 }
 
 // Return from subroutine
@@ -174,8 +173,6 @@ void drw_vx_vy(Chip8* chip8, uint8_t x, uint8_t y, uint8_t n)
                 chip8->V[0xF] = 1;
         }
     }
-
-    chip8->drawFlag = 1;
 }
 
 // Skip next instruction if key with the value of Vx is pressed

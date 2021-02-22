@@ -29,13 +29,17 @@ void handleCloseEvent()
 
 int main(int argc, char** argv)
 {
-    if(argc != 2)
-        printf("usage: ./chip8 rom.ch8\n");
+    if(argc < 2)
+        printf("usage: ./chip8.out rom.ch8 displayScale (displayScale is optional, default value is 1)\n");
     
     else
     {
-        mode.height = W_HEIGHT;
-        mode.width = W_WIDTH;
+        int scale = 1;
+        if(argc == 3)
+            scale = atoi( argv[2] );
+
+        mode.height = W_HEIGHT*scale;
+        mode.width = W_WIDTH*scale;
         mode.bitsPerPixel = 32;
         window = sfRenderWindow_create(mode, "chip-8", sfResize | sfClose, NULL);
         clock = sfClock_create();
@@ -56,7 +60,7 @@ int main(int argc, char** argv)
 
             if(timer_60 >= 1.f/60.f)
             {
-                // Update timer_60s at a 60Hz frequency
+                // Update timers and display at a 60Hz frequency
                 timer_60 = 0;
                 updateTimers(chip8);
                 render(chip8, window);

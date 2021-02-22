@@ -56,7 +56,6 @@ void loadFonts(Chip8* chip8)
 void resetSystem(Chip8* chip8)
 {
     memset(chip8, 0, sizeof(Chip8));
-    chip8->drawFlag = 1;
     chip8->PC = PROG_START;
     loadFonts(chip8);
     srand(time(NULL));
