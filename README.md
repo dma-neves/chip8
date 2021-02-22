@@ -8,7 +8,7 @@
 **Requirments**
   - Unix based OS.
   - gcc compiler.
-  - CSFML library (https://www.sfml-dev.org/download/csfml/).
+  - [CSFML library](https://www.sfml-dev.org/download/csfml/).
 
 **Compiling and Running**
   - To compile the program use the included makefile
