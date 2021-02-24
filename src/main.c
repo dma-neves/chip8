@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SFML/Graphics.h>
+#include <SFML/Audio.h>
 
 #include "Emulator.h"
+#include "Buzzer.h"
 
 #define W_HEIGHT 320
 #define W_WIDTH  640
@@ -10,6 +12,7 @@
 sfClock* clock;
 sfRenderWindow* window;
 sfVideoMode mode;
+sfSound* buzzer;
 sfEvent event;
 float timer_60 = 0;  // 60Hz  timer
 float timer_500 = 0; // 500Hz timer
@@ -27,6 +30,14 @@ void handleCloseEvent()
     }
 }
 
+void setupWindow(int scale)
+{
+    mode.height = W_HEIGHT*scale;
+    mode.width = W_WIDTH*scale;
+    mode.bitsPerPixel = 32;
+    window = sfRenderWindow_create(mode, "chip-8", sfResize | sfClose, NULL);
+}
+
 int main(int argc, char** argv)
 {
     if(argc < 2)
@@ -38,14 +49,11 @@ int main(int argc, char** argv)
         if(argc == 3)
             scale = atoi( argv[2] );
 
-        mode.height = W_HEIGHT*scale;
-        mode.width = W_WIDTH*scale;
-        mode.bitsPerPixel = 32;
-        window = sfRenderWindow_create(mode, "chip-8", sfResize | sfClose, NULL);
+        setupWindow(scale);
         clock = sfClock_create();
         running = 1;
+        buzzer = buzzerCreate();
         
-
         Chip8* chip8 = malloc(sizeof(Chip8));
         resetSystem(chip8);
         loadRom(argv[1], chip8);
@@ -62,7 +70,7 @@ int main(int argc, char** argv)
             {
                 // Update timers and display at a 60Hz frequency
                 timer_60 = 0;
-                updateTimers(chip8);
+                updateTimers(chip8, buzzer);
                 render(chip8, window);
             }
 
@@ -78,5 +86,6 @@ int main(int argc, char** argv)
 
         sfClock_destroy(clock);
         sfRenderWindow_destroy(window);
+        buzzerDestroy();
     }
 }

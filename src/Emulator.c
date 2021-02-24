@@ -251,13 +251,18 @@ void executeNextInstruction(Chip8* chip8)
         chip8->PC += 2;
 }
 
-void updateTimers(Chip8* chip8)
+void updateTimers(Chip8* chip8, sfSound* buzzer)
 {
     if(chip8->delayTimer != 0)
         chip8->delayTimer--;
 
     if(chip8->soundTimer != 0)
+    {
         chip8->soundTimer--;
+        sfSound_play(buzzer);
+    }
+    else
+        sfSound_stop(buzzer);
 }
 
 void handleInput(Chip8* chip8)
