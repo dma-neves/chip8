@@ -12,7 +12,7 @@
 sfClock* clock;
 sfRenderWindow* window;
 sfVideoMode mode;
-sfSound* buzzer;
+static sfSound* buzzer;
 sfEvent event;
 float timer_60 = 0;  // 60Hz  timer
 float timer_500 = 0; // 500Hz timer

@@ -4,7 +4,7 @@
 
 #define NSAMPLES 44100
 
-sfSound* buzzer;
+static sfSound* buzzer;
 sfSoundBuffer* soundBuf;
 uint16_t samples[NSAMPLES];
 
